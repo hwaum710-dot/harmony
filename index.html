@@ -232,4 +232,1260 @@
                         </div>
                         <div class="text-slate-300">선택 스트로크: <span id="sim-current-stroke-label" class="font-bold text-white">스매시</span></div>
                         <div class="text-slate-300">최고 도달 고도: <span id="sim-stat-height" class="font-mono text-cyan-300">0.0 m</span></div>
-                        <div class="text-slate-300">최고 비행 속도: <span id="sim-stat-speed" class="font-mono
+                        <div class="text-slate-300">최고 비행 속도: <span id="sim-stat-speed" class="font-mono text-amber-300">0 km/h</span></div>
+                        <div class="text-slate-300">판정: <span id="sim-stat-result" class="font-bold text-emerald-400">IN (유효)</span></div>
+                    </div>
+                </div>
+
+                <!-- Simulator Parameter Controls -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
+                    <!-- Stroke Selector dropdown/buttons -->
+                    <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700">
+                        <label class="block text-xs font-bold text-slate-300 mb-2">스트로크 프리셋 선택</label>
+                        <select id="sim-stroke-select" onchange="onSimStrokeChange()" class="w-full bg-slate-800 border border-slate-600 rounded-lg text-xs font-semibold px-3 py-2 text-white focus:outline-none focus:border-emerald-400">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+
+                    <!-- Power Slider -->
+                    <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700">
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-slate-300">타구 파워 (Power)</span>
+                            <span id="val-sim-power" class="text-emerald-400 font-mono">85%</span>
+                        </div>
+                        <input id="slider-sim-power" type="range" min="20" max="100" value="85" oninput="updateSimSliders()" class="w-full accent-emerald-400 cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                            <span>약하게 (드롭/네트)</span>
+                            <span>강하게 (스매시)</span>
+                        </div>
+                    </div>
+
+                    <!-- Launch Angle Slider -->
+                    <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700">
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-slate-300">발사 각도 (Angle)</span>
+                            <span id="val-sim-angle" class="text-cyan-400 font-mono">-15°</span>
+                        </div>
+                        <input id="slider-sim-angle" type="range" min="-45" max="75" value="-15" oninput="updateSimSliders()" class="w-full accent-cyan-400 cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                            <span>내려치기 (-45°)</span>
+                            <span>높이 올리기 (+75°)</span>
+                        </div>
+                    </div>
+
+                    <!-- Hit Height Slider -->
+                    <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700">
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-slate-300">타구점 높이 (Hit Point)</span>
+                            <span id="val-sim-hit-h" class="text-amber-400 font-mono">2.8m</span>
+                        </div>
+                        <input id="slider-sim-hit-h" type="range" min="0.3" max="3.2" step="0.1" value="2.8" oninput="updateSimSliders()" class="w-full accent-amber-400 cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                            <span>언더/네트 (낮음)</span>
+                            <span>하이 포인트 (높음)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: REACTION / TACTICAL ARCADE GAME ================= -->
+        <section id="section-game" class="hidden space-y-6">
+            <!-- Game Top Header Stat Bar -->
+            <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+                <div class="flex items-center gap-3">
+                    <div class="bg-amber-500/20 text-amber-400 p-2.5 rounded-xl border border-amber-500/30">
+                        <i class="fa-solid fa-trophy text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">현재 점수</div>
+                        <div id="game-score" class="text-2xl font-extrabold text-amber-400 font-mono">0</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6 text-center">
+                    <div>
+                        <div class="text-xs text-slate-400">콤보</div>
+                        <div id="game-combo" class="text-xl font-bold text-cyan-400 font-mono">0 x</div>
+                    </div>
+                    <div class="h-8 w-px bg-slate-700"></div>
+                    <div>
+                        <div class="text-xs text-slate-400">정확도</div>
+                        <div id="game-accuracy" class="text-xl font-bold text-emerald-400 font-mono">100%</div>
+                    </div>
+                    <div class="h-8 w-px bg-slate-700"></div>
+                    <div>
+                        <div class="text-xs text-slate-400">남은 기회</div>
+                        <div id="game-lives" class="text-xl font-bold text-rose-400 flex gap-1">
+                            <i class="fa-solid fa-heart"></i>
+                            <i class="fa-solid fa-heart"></i>
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="game-start-btn" onclick="startGame()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl shadow-lg transition flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-play"></i> 게임 시작
+                    </button>
+                    <button onclick="toggleGameSound()" id="btn-sound-toggle" class="px-3 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl text-slate-200 transition text-sm">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Arcade Play Screen Canvas -->
+            <div class="relative bg-slate-950 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
+                <canvas id="game-canvas" width="1000" height="480" class="w-full h-auto block"></canvas>
+
+                <!-- Start Screen Overlay -->
+                <div id="game-overlay-start" class="absolute inset-0 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-20">
+                    <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center text-3xl mb-4 border border-emerald-500/30">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-white mb-2">배드민턴 실전 대응 리액션 게임</h3>
+                    <p class="text-slate-300 text-sm max-w-md mb-6 leading-relaxed">
+                        상대방이 날린 셔틀콕의 **위치와 높이**를 빠르게 파악하고, 최적의 타구 영역(Sweet Zone)에 들어왔을 때 **가장 적절한 스트로크 버튼**을 누르세요!
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl w-full mb-6 text-xs text-left">
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                            <span class="text-emerald-400 font-bold block mb-1">1. 높은 후방 셔틀콕</span>
+                            <span class="text-slate-400">→ 클리어, 스매시, 드롭으로 강력하게 또는 깊게 대처</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                            <span class="text-cyan-400 font-bold block mb-1">2. 빠른 중간 드라이브</span>
+                            <span class="text-slate-400">→ 즉각적인 드라이브로 반격</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                            <span class="text-amber-400 font-bold block mb-1">3. 네트 앞 drop/net</span>
+                            <span class="text-slate-400">→ 헤어핀, 푸시, 언더 롭 선택</span>
+                        </div>
+                    </div>
+
+                    <button onclick="startGame()" class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-base rounded-2xl shadow-xl transition transform hover:scale-105">
+                        지금 도전하기 <i class="fa-solid fa-bolt ml-1"></i>
+                    </button>
+                </div>
+
+                <!-- Game Over Overlay -->
+                <div id="game-overlay-over" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
+                    <div class="w-16 h-16 bg-rose-500/20 text-rose-400 rounded-2xl flex items-center justify-center text-3xl mb-3 border border-rose-500/30">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-white mb-1">게임 종료!</h3>
+                    <p id="game-over-reason" class="text-slate-400 text-xs mb-4">셔틀콕을 놓쳤습니다.</p>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 w-full max-w-sm mb-6 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">최종 점수</span>
+                            <span id="final-score" class="font-extrabold text-amber-400 font-mono">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">최대 연속 콤보</span>
+                            <span id="final-combo" class="font-bold text-cyan-400 font-mono">0 x</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">타구 정확도</span>
+                            <span id="final-acc" class="font-bold text-emerald-400 font-mono">0%</span>
+                        </div>
+                        <div class="flex justify-between pt-2 border-t border-slate-800">
+                            <span class="text-slate-400">달성 칭호</span>
+                            <span id="final-rank" class="font-bold text-purple-400">루키 리턴즈</span>
+                        </div>
+                    </div>
+
+                    <button onclick="startGame()" class="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl shadow-lg transition">
+                        다시 도전하기 <i class="fa-solid fa-rotate-right ml-1"></i>
+                    </button>
+                </div>
+
+                <!-- Live Game Notification Toast inside Canvas -->
+                <div id="game-toast" class="opacity-0 transition-opacity duration-200 absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/90 text-amber-300 font-bold px-4 py-2 rounded-xl border border-amber-500/40 text-sm shadow-xl flex items-center gap-2 z-10">
+                    <i class="fa-solid fa-circle-info"></i> <span id="game-toast-text">PERFECT!</span>
+                </div>
+            </div>
+
+            <!-- Arcade Stroke Action Pad (Buttons & Hotkeys) -->
+            <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-xl">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-keyboard text-emerald-400"></i> 실전 대응 스트로크 버튼 (키보드 단축키 지원 1~7)
+                    </h4>
+                    <span class="text-xs text-slate-400">상황에 맞는 최적의 버튼을 타구 타이밍에 눌러주세요!</span>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5" id="game-action-buttons">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-4 mt-auto text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span>© 2026 배드민턴 스트로크 학습 & 모의 시뮬레이터 프로젝트</span>
+            <span class="flex items-center gap-3">
+                <span><i class="fa-solid fa-circle text-[8px] text-emerald-500 mr-1"></i>실시간 인터랙티브 엔진</span>
+                <span><i class="fa-solid fa-bolt text-amber-400 mr-1"></i>Web Audio 사운드 연동</span>
+            </span>
+        </div>
+    </footer>
+
+    <script>
+        /* ================= DATA STRUCTURES ================= */
+        const STROKES = [
+            {
+                id: 'clear',
+                key: '1',
+                name: '하이 클리어',
+                engName: 'High Clear',
+                category: 'defense',
+                badgeColor: 'bg-sky-500/20 text-sky-400 border-sky-500/30',
+                desc: '상대방 후방 깊숙이 높고 길게 올려 보내어 시간을 벌고 자세를 재정비하는 대표적 수비/연결 기술입니다.',
+                height: '머리 위 (고위치)',
+                speed: '보통 (Medium)',
+                target: '상대 백코트 Endline',
+                power: 80,
+                angle: 45,
+                hitH: 2.9,
+                racketTip: '몸 앞에서 최고점 임팩트, 임팩트 순간 스냅으로 하늘 방향 밀어 올림',
+                footworkTip: '후방 풋워크 후 오른쪽 어깨를 열고 오른발 중심에서 왼발로 이동',
+                tacticsTip: '상대의 수비 위치가 앞으로 쏠렸을 때나 시간을 벌고 싶을 때 발사'
+            },
+            {
+                id: 'smash',
+                key: '2',
+                name: '스매시',
+                engName: 'Smash',
+                category: 'attack',
+                badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                desc: '높은 타구점에서 강한 회전과 팔목 스냅을 이용하여 상대 코트 바닥으로 가파르게 내리꽂는 최고 위력의 공격 기술입니다.',
+                height: '최고점 (High Point)',
+                speed: '매우 빠름 (Fastest)',
+                target: '상대 미드/프론트 코트 바닥',
+                power: 98,
+                angle: -20,
+                hitH: 3.1,
+                racketTip: '최대한 높이 뻗어 라켓 면을 약간 숙이고 강한 회전 및 손목 채찍질',
+                footworkTip: '점프 스매시 또는 빠른 후방 위치 선정 후 전신 체중 전달',
+                tacticsTip: '상대의 뜬 리턴콕을 결정짓는 결정구로 활용'
+            },
+            {
+                id: 'drop',
+                key: '3',
+                name: '드롭 샷',
+                engName: 'Drop Shot',
+                category: 'attack',
+                badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                desc: '스매시 동작과 동일한 폼으로 가볍게 타구하여 상대 네트 바로 너머로 떨어뜨리는 허를찌르는 기술입니다.',
+                height: '머리 위 높은 위치',
+                speed: '느림/중간 (Slow)',
+                target: '상대 네트 바로 앞',
+                power: 40,
+                angle: 10,
+                hitH: 2.8,
+                racketTip: '스매시처럼 빠른 준비 후, 임팩트 시 순간적으로 힘을 빼고 콕을 가볍게 깎아침',
+                footworkTip: '스매시 모션을 완벽히 모방하여 상대 수비 반응을 교란',
+                tacticsTip: '상대가 후방에 치우쳐 있을 때 네트 앞 빈공간 공략'
+            },
+            {
+                id: 'drive',
+                key: '4',
+                name: '드라이브',
+                engName: 'Drive',
+                category: 'attack',
+                badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+                desc: '네트 상단을 살짝 넘어 상대 코트 평행으로 빠르게 날아가게 치는 공격적인 빠른 주고받기 기술입니다.',
+                height: '어깨/가슴 높이 (Mid)',
+                speed: '빠름 (Fast)',
+                target: '상대 중반 사이드 코트',
+                power: 75,
+                angle: 2,
+                hitH: 1.6,
+                racketTip: '짧은 라켓 백스윙 후 컴팩트하게 라켓 면을 수직으로 세워 밀어침',
+                footworkTip: '낮은 자세 유제, 빠르게 앞으로 한 발 내딛으며 반응',
+                tacticsTip: '복식 경기에서 주도권을 잡거나 빠른 빠른 랠리 상황에서 공격 전환'
+            },
+            {
+                id: 'hairpin',
+                key: '5',
+                name: '헤어핀 (네트)',
+                engName: 'Hairpin Net Shot',
+                category: 'net',
+                badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+                desc: '네트 근처로 떨어진 콕을 라켓 면으로 부드럽게 받쳐 올려 네트 상단을 타고 넘어가도록 떨어뜨리는 정교한 컨트롤 기술입니다.',
+                height: '네트 높이 이하 (Low)',
+                speed: '매우 느림 (Soft)',
+                target: '상대 네트 초밀착 정밀 낙하',
+                power: 20,
+                angle: 50,
+                hitH: 1.1,
+                racketTip: '손목 힘을 완전히 빼고 라켓을 살짝 대어 콕의 회전을 이용해 띄움',
+                footworkTip: '런지 자세로 한 발 깊숙이 내딛으며 오른팔을 정교하게 뻗음',
+                tacticsTip: '상대의 드롭이나 네트 구에 대응해 주도권 뺏기'
+            },
+            {
+                id: 'push',
+                key: '6',
+                name: '푸시',
+                engName: 'Push Shot',
+                category: 'net',
+                badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+                desc: '네트 상단 위로 높게 떠오른 셔틀콕을 빠르게 눌러쳐 상대 코트로 찔러 넣는 기습 네트 공격 기술입니다.',
+                height: '네트 상단 이상 (Net High)',
+                speed: '매우 빠름 (Quick)',
+                target: '상대 코트 빈 공간 바닥',
+                power: 65,
+                angle: -15,
+                hitH: 1.7,
+                racketTip: '손가락과 손목 튕김을 이용하여 네트를 터치하지 않도록 짧게 끊어 쳐 넣음',
+                footworkTip: '네트 앞으로 빠르게 전진하며 헤드 터치 방지',
+                tacticsTip: '상대의 짧은 리턴이나 조급한 헤어핀 시 즉각 찬스 득점'
+            },
+            {
+                id: 'lift',
+                key: '7',
+                name: '언더 리프트 (롭)',
+                engName: 'Underarm Lift',
+                category: 'defense',
+                badgeColor: 'bg-sky-500/20 text-sky-400 border-sky-500/30',
+                desc: '네트 아래로 떨어진 낮아진 셔틀콕을 아래에서 위로 깊고 높게 퍼올려 상대 후방 엔드라인으로 보내는 수비형 기술입니다.',
+                height: '무릎/발목 높이 (Very Low)',
+                speed: '보통 (High Arc)',
+                target: '상대 후방 엔드라인',
+                power: 85,
+                angle: 65,
+                hitH: 0.6,
+                racketTip: '아래에서 위로 퍼 올리듯 라켓 면을 충분히 열고 크게 휘두름',
+                footworkTip: '깊은 런지 자세로 하체를 견고히 받치고 자세 보정',
+                tacticsTip: '네트 앞 난조 수비 시 상대 스매시 위험을 줄이기 위해 깊게 올려 보냄'
+            }
+        ];
+
+        /* ================= WEB AUDIO SYNTHESIZER ================= */
+        let audioCtx = null;
+        let isSoundMuted = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playHitSound(type) {
+            if (isSoundMuted) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'smash') {
+                // Heavy pop impact
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.15);
+                gain.gain.setValueAtTime(0.8, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } else if (type === 'clear') {
+                // High crisp swoosh hit
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.exponentialRampToValueAtTime(120, now + 0.12);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                osc.start(now);
+                osc.stop(now + 0.12);
+            } else if (type === 'soft') {
+                // Soft tap
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(150, now + 0.08);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'success') {
+                // High chime
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'miss') {
+                // Low buzz
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(130, now);
+                osc.frequency.linearRampToValueAtTime(80, now + 0.2);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        function toggleGameSound() {
+            isSoundMuted = !isSoundMuted;
+            const btn = document.getElementById('btn-sound-toggle');
+            if (isSoundMuted) {
+                btn.innerHTML = `<i class="fa-solid fa-volume-xmark text-rose-400"></i>`;
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-volume-high text-emerald-400"></i>`;
+            }
+        }
+
+        /* ================= STATE MANAGEMENT ================= */
+        let currentSelectedStroke = STROKES[0];
+        let currentTab = 'learn';
+
+        // Highscore saved in localStorage
+        let userStats = {
+            highScore: parseInt(localStorage.getItem('badminton_high_score') || '0'),
+            rank: localStorage.getItem('badminton_rank') || '입문자'
+        };
+
+        /* ================= TAB SWITCHING ================= */
+        function switchTab(tabId) {
+            currentTab = tabId;
+
+            // Hide sections
+            document.getElementById('section-learn').classList.add('hidden');
+            document.getElementById('section-sim').classList.add('hidden');
+            document.getElementById('section-game').classList.add('hidden');
+
+            // Reset tab styles
+            ['learn', 'sim', 'game'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                btn.className = 'px-4 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-white transition-all duration-200';
+            });
+
+            // Active tab
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.className = 'px-4 py-1.5 rounded-lg font-semibold transition-all duration-200 bg-emerald-500 text-slate-950 shadow';
+
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+
+            if (tabId === 'learn') {
+                renderLearnCanvas();
+            } else if (tabId === 'sim') {
+                syncSimSlidersWithStroke(currentSelectedStroke);
+                triggerSimFlight();
+            } else if (tabId === 'game') {
+                initGameCanvas();
+            }
+        }
+
+        function switchTabWithStroke(tabId) {
+            switchTab(tabId);
+        }
+
+        /* ================= SECTION 1: LEARN TAB LOGIC ================= */
+        function initLearnSection() {
+            const grid = document.getElementById('stroke-grid');
+            grid.innerHTML = '';
+
+            STROKES.forEach((s, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `stroke-card-${s.id}`;
+                btn.onclick = () => selectStrokeInLearn(s);
+                btn.className = `p-3 rounded-xl border transition flex flex-col items-center text-center gap-1.5 ${
+                    s.id === currentSelectedStroke.id 
+                    ? 'bg-slate-700 border-emerald-400 shadow-md ring-2 ring-emerald-400/30' 
+                    : 'bg-slate-900/80 border-slate-700/80 hover:bg-slate-800'
+                }`;
+
+                btn.innerHTML = `
+                    <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700">키 ${s.key}</span>
+                    <span class="font-bold text-xs text-white">${s.name}</span>
+                    <span class="text-[10px] text-slate-400">${s.engName}</span>
+                `;
+                grid.appendChild(btn);
+            });
+
+            updateLearnView(currentSelectedStroke);
+        }
+
+        function selectStrokeInLearn(stroke) {
+            currentSelectedStroke = stroke;
+            // Update UI card selections
+            STROKES.forEach(s => {
+                const card = document.getElementById(`stroke-card-${s.id}`);
+                if (card) {
+                    if (s.id === stroke.id) {
+                        card.className = 'p-3 rounded-xl border transition flex flex-col items-center text-center gap-1.5 bg-slate-700 border-emerald-400 shadow-md ring-2 ring-emerald-400/30';
+                    } else {
+                        card.className = 'p-3 rounded-xl border transition flex flex-col items-center text-center gap-1.5 bg-slate-900/80 border-slate-700/80 hover:bg-slate-800';
+                    }
+                }
+            });
+
+            updateLearnView(stroke);
+            renderLearnCanvas();
+        }
+
+        function updateLearnView(s) {
+            document.getElementById('learn-stroke-title').innerText = `${s.name} (${s.engName})`;
+            document.getElementById('learn-stroke-desc').innerText = s.desc;
+            document.getElementById('learn-metric-height').innerText = s.height;
+            document.getElementById('learn-metric-speed').innerText = s.speed;
+            document.getElementById('learn-metric-target').innerText = s.target;
+            document.getElementById('learn-tip-racket').innerText = s.racketTip;
+            document.getElementById('learn-tip-footwork').innerText = s.footworkTip;
+            document.getElementById('learn-tip-tactics').innerText = s.tacticsTip;
+            document.getElementById('learn-key-combo').innerHTML = `<i class="fa-solid fa-keyboard mr-1"></i>단축키: <kbd class="px-2 py-0.5 bg-slate-700 rounded text-amber-300 font-mono">${s.key}</kbd>`;
+
+            const badge = document.getElementById('learn-type-badge');
+            badge.className = `px-2.5 py-1 rounded-full text-xs font-bold border ${s.badgeColor}`;
+            badge.innerText = s.category === 'attack' ? '공격형 스트로크' : (s.category === 'defense' ? '수비/전환 스트로크' : '네트/정밀 스트로크');
+        }
+
+        function renderLearnCanvas() {
+            const canvas = document.getElementById('learn-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Court background
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, w, h);
+
+            // Court Floor Line
+            const floorY = h - 30;
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(20, floorY);
+            ctx.lineTo(w - 20, floorY);
+            ctx.stroke();
+
+            // Net
+            const netX = w / 2;
+            const netH = 80;
+            ctx.strokeStyle = '#f8fafc';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(netX, floorY);
+            ctx.lineTo(netX, floorY - netH);
+            ctx.stroke();
+
+            // Net Mesh visual
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 1;
+            for (let y = floorY - netH; y < floorY; y += 10) {
+                ctx.beginPath();
+                ctx.moveTo(netX - 5, y);
+                ctx.lineTo(netX + 5, y);
+                ctx.stroke();
+            }
+
+            // Labels
+            ctx.fillStyle = '#64748b';
+            ctx.font = '11px Pretendard';
+            ctx.fillText('내 코트 (Player)', 50, floorY + 20);
+            ctx.fillText('상대 코트 (Opponent)', w - 150, floorY + 20);
+
+            // Calculate physics trajectory arc
+            const s = currentSelectedStroke;
+            const startX = 80;
+            const startY = floorY - (s.hitH * 50);
+
+            // Angle & Power physics simulation points
+            const rad = (s.angle * Math.PI) / 180;
+            const speedFactor = s.power * 0.18;
+            let vx = Math.cos(rad) * speedFactor;
+            let vy = -Math.sin(rad) * speedFactor;
+
+            const gravity = 0.28;
+            const drag = 0.982;
+
+            let px = startX;
+            let py = startY;
+            const points = [{x: px, y: py}];
+
+            for (let t = 0; t < 120; t++) {
+                vx *= drag;
+                vy *= drag;
+                vy += gravity;
+
+                px += vx;
+                py += vy;
+
+                points.push({x: px, y: py});
+
+                if (py >= floorY || px >= w - 30) break;
+            }
+
+            // Draw flight trajectory line
+            ctx.beginPath();
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([6, 4]);
+
+            if (points.length > 0) {
+                ctx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Impact Start Point (Player Racket)
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.arc(startX, startY, 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '10px Pretendard';
+            ctx.fillText('타구점', startX - 15, startY - 12);
+
+            // Draw Landing Point
+            if (points.length > 0) {
+                const endP = points[points.length - 1];
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(endP.x, endP.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillText('낙하지점', endP.x - 18, endP.y - 10);
+            }
+        }
+
+        /* ================= SECTION 2: SIMULATOR LOGIC ================= */
+        let simAnimFrame = null;
+        let simShuttleState = null;
+
+        function initSimSection() {
+            const select = document.getElementById('sim-stroke-select');
+            select.innerHTML = '';
+            STROKES.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.innerText = `${s.name} (${s.engName})`;
+                select.appendChild(opt);
+            });
+            select.value = currentSelectedStroke.id;
+        }
+
+        function onSimStrokeChange() {
+            const val = document.getElementById('sim-stroke-select').value;
+            const found = STROKES.find(s => s.id === val);
+            if (found) {
+                currentSelectedStroke = found;
+                syncSimSlidersWithStroke(found);
+                triggerSimFlight();
+            }
+        }
+
+        function syncSimSlidersWithStroke(s) {
+            document.getElementById('sim-stroke-select').value = s.id;
+            document.getElementById('slider-sim-power').value = s.power;
+            document.getElementById('slider-sim-angle').value = s.angle;
+            document.getElementById('slider-sim-hit-h').value = s.hitH;
+            updateSimSliders();
+        }
+
+        function updateSimSliders() {
+            const p = document.getElementById('slider-sim-power').value;
+            const a = document.getElementById('slider-sim-angle').value;
+            const h = document.getElementById('slider-sim-hit-h').value;
+
+            document.getElementById('val-sim-power').innerText = p + '%';
+            document.getElementById('val-sim-angle').innerText = a + '°';
+            document.getElementById('val-sim-hit-h').innerText = h + 'm';
+
+            const strokeObj = STROKES.find(s => s.id === document.getElementById('sim-stroke-select').value);
+            if (strokeObj) {
+                document.getElementById('sim-current-stroke-label').innerText = strokeObj.name;
+            }
+        }
+
+        function triggerSimFlight() {
+            if (simAnimFrame) cancelAnimationFrame(simAnimFrame);
+
+            const power = parseFloat(document.getElementById('slider-sim-power').value);
+            const angle = parseFloat(document.getElementById('slider-sim-angle').value);
+            const hitH = parseFloat(document.getElementById('slider-sim-hit-h').value);
+
+            const canvas = document.getElementById('sim-canvas');
+            const w = canvas.width;
+            const h = canvas.height;
+            const floorY = h - 50;
+
+            const startX = 120;
+            const startY = floorY - (hitH * 70);
+
+            const rad = (angle * Math.PI) / 180;
+            const initialSpeed = power * 0.22;
+
+            simShuttleState = {
+                x: startX,
+                y: startY,
+                vx: Math.cos(rad) * initialSpeed,
+                vy: -Math.sin(rad) * initialSpeed,
+                trail: [],
+                maxHeight: startY,
+                maxSpeedKmh: Math.round(power * 3.5),
+                active: true,
+                floorY: floorY,
+                netX: w / 2,
+                netH: 100,
+                landingX: 0,
+                hitNet: false
+            };
+
+            // Sound effect trigger
+            if (power > 85 && angle < 0) {
+                playHitSound('smash');
+            } else if (power > 60) {
+                playHitSound('clear');
+            } else {
+                playHitSound('soft');
+            }
+
+            animateSim();
+        }
+
+        function animateSim() {
+            const canvas = document.getElementById('sim-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            const st = simShuttleState;
+
+            if (st.active) {
+                // Drag & Gravity physics
+                const drag = 0.981;
+                const gravity = 0.28;
+
+                st.vx *= drag;
+                st.vy *= drag;
+                st.vy += gravity;
+
+                st.x += st.vx;
+                st.y += st.vy;
+
+                if (st.y < st.maxHeight) st.maxHeight = st.y;
+
+                st.trail.push({x: st.x, y: st.y});
+
+                // Net collision check
+                if (st.x >= st.netX - 8 && st.x <= st.netX + 8 && st.y >= st.floorY - st.netH) {
+                    st.hitNet = true;
+                    st.active = false;
+                }
+
+                // Floor or boundary collision check
+                if (st.y >= st.floorY) {
+                    st.y = st.floorY;
+                    st.landingX = st.x;
+                    st.active = false;
+                } else if (st.x >= w - 20) {
+                    st.landingX = st.x;
+                    st.active = false;
+                }
+            }
+
+            // Draw Canvas Frame
+            ctx.clearRect(0, 0, w, h);
+
+            // Background & Gradient Court Floor
+            ctx.fillStyle = '#090d16';
+            ctx.fillRect(0, 0, w, h);
+
+            // Court Base Line
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(50, st.floorY, w - 100, 12);
+
+            // Net
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(st.netX, st.floorY);
+            ctx.lineTo(st.netX, st.floorY - st.netH);
+            ctx.stroke();
+
+            // Net Mesh
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.lineWidth = 1;
+            for (let y = st.floorY - st.netH; y < st.floorY; y += 8) {
+                ctx.beginPath();
+                ctx.moveTo(st.netX - 8, y);
+                ctx.lineTo(st.netX + 8, y);
+                ctx.stroke();
+            }
+
+            // Court Boundary Markings
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(50, st.floorY - 1, w - 100, 2);
+
+            // Trajectory Trail
+            if (st.trail.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 3;
+                ctx.moveTo(st.trail[0].x, st.trail[0].y);
+                for (let i = 1; i < st.trail.length; i++) {
+                    ctx.lineTo(st.trail[i].x, st.trail[i].y);
+                }
+                ctx.stroke();
+            }
+
+            // Draw Shuttlecock
+            ctx.save();
+            ctx.translate(st.x, st.y);
+            const rotAngle = Math.atan2(st.vy, st.vx);
+            ctx.rotate(rotAngle);
+
+            // Shuttlecock Head & Feathers
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.arc(4, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.beginPath();
+            ctx.moveTo(0, -3);
+            ctx.lineTo(-12, -7);
+            ctx.lineTo(-12, 7);
+            ctx.lineTo(0, 3);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+
+            // Stats Update
+            const realHeightM = Math.max(0, ((st.floorY - st.maxHeight) / 70)).toFixed(1);
+            document.getElementById('sim-stat-height').innerText = `${realHeightM} m`;
+            document.getElementById('sim-stat-speed').innerText = `${st.maxSpeedKmh} km/h`;
+
+            // Verdict
+            const resultLabel = document.getElementById('sim-stat-result');
+            if (st.hitNet) {
+                resultLabel.innerText = 'NET (네트 걸림)';
+                resultLabel.className = 'font-bold text-rose-400';
+            } else if (st.landingX > 0) {
+                const courtEnd = w - 80;
+                if (st.landingX > st.netX && st.landingX <= courtEnd) {
+                    resultLabel.innerText = 'IN (코트 유효 타구)';
+                    resultLabel.className = 'font-bold text-emerald-400';
+                } else {
+                    resultLabel.innerText = 'OUT (라인 아웃)';
+                    resultLabel.className = 'font-bold text-amber-400';
+                }
+            } else {
+                resultLabel.innerText = '비행 중...';
+                resultLabel.className = 'font-bold text-sky-400';
+            }
+
+            if (st.active) {
+                simAnimFrame = requestAnimationFrame(animateSim);
+            }
+        }
+
+        /* ================= SECTION 3: REACTION GAME LOGIC ================= */
+        let gameLoopId = null;
+        let isGameRunning = false;
+        let gameState = {
+            score: 0,
+            combo: 0,
+            lives: 3,
+            totalShuttles: 0,
+            correctHits: 0,
+            shuttle: null,
+            hitZoneRadius: 55
+        };
+
+        function initGameCanvas() {
+            renderGameActionButtons();
+            updateGameHeaderStats();
+        }
+
+        function renderGameActionButtons() {
+            const container = document.getElementById('game-action-buttons');
+            container.innerHTML = '';
+
+            STROKES.forEach(s => {
+                const btn = document.createElement('button');
+                btn.onclick = () => triggerGameStrokeAction(s.id);
+                btn.className = `p-3 rounded-xl border border-slate-700 bg-slate-900/90 hover:bg-slate-800 transition text-left flex flex-col justify-between hover:border-emerald-400 active:scale-95 group`;
+                btn.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-emerald-400 group-hover:text-emerald-300">${s.name}</span>
+                        <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-[10px] text-amber-300 font-mono border border-slate-700">${s.key}</kbd>
+                    </div>
+                    <span class="text-[10px] text-slate-400 truncate">${s.engName}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function updateGameHeaderStats() {
+            document.getElementById('game-score').innerText = gameState.score;
+            document.getElementById('game-combo').innerText = `${gameState.combo} x`;
+
+            const acc = gameState.totalShuttles > 0 
+                ? Math.round((gameState.correctHits / gameState.totalShuttles) * 100) 
+                : 100;
+            document.getElementById('game-accuracy').innerText = `${acc}%`;
+
+            // Hearts for lives
+            let heartsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < gameState.lives) {
+                    heartsHtml += '<i class="fa-solid fa-heart text-rose-500"></i>';
+                } else {
+                    heartsHtml += '<i class="fa-regular fa-heart text-slate-600"></i>';
+                }
+            }
+            document.getElementById('game-lives').innerHTML = heartsHtml;
+
+            // Header rank
+            document.getElementById('header-high-score').innerText = userStats.highScore;
+            document.getElementById('header-rank').innerText = userStats.rank;
+        }
+
+        function startGame() {
+            initAudio();
+            document.getElementById('game-overlay-start').classList.add('hidden');
+            document.getElementById('game-overlay-over').classList.add('hidden');
+
+            gameState = {
+                score: 0,
+                combo: 0,
+                lives: 3,
+                totalShuttles: 0,
+                correctHits: 0,
+                shuttle: null,
+                hitZoneRadius: 60
+            };
+
+            isGameRunning = true;
+            updateGameHeaderStats();
+            spawnNextShuttle();
+
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            runGameLoop();
+        }
+
+        function spawnNextShuttle() {
+            if (!isGameRunning) return;
+
+            const canvas = document.getElementById('game-canvas');
+            const w = canvas.width;
+            const h = canvas.height;
+            const floorY = h - 50;
+
+            // Randomly choose an incoming stroke situation
+            const strokeTypes = ['clear', 'smash', 'drop', 'drive', 'hairpin', 'push', 'lift'];
+            const randomType = strokeTypes[Math.floor(Math.random() * strokeTypes.length)];
+
+            // Target Sweet Spot Zone (Player Side)
+            let playerSweetX = 180;
+            let playerSweetY = floorY - 140;
+
+            if (randomType === 'hairpin' || randomType === 'push' || randomType === 'lift') {
+                playerSweetX = 380; // Net area
+                playerSweetY = floorY - 60;
+            } else if (randomType === 'drive') {
+                playerSweetX = 280; // Midcourt
+                playerSweetY = floorY - 110;
+            } else if (randomType === 'smash' || randomType === 'clear' || randomType === 'drop') {
+                playerSweetX = 140; // Backcourt high
+                playerSweetY = floorY - 210;
+            }
+
+            // Start position (Opponent side)
+            const startX = w - 100;
+            const startY = floorY - Math.random() * 150 - 80;
+
+            // Speed scales slightly with score
+            const speedFactor = 0.015 + Math.min(gameState.score * 0.00005, 0.02);
+
+            gameState.shuttle = {
+                targetStroke: randomType,
+                x: startX,
+                y: startY,
+                startX: startX,
+                startY: startY,
+                sweetX: playerSweetX,
+                sweetY: playerSweetY,
+                progress: 0, // 0.0 to 1.0 flight progress
+                speed: speedFactor,
+                active: true,
+                hitResult: null
+            };
+        }
+
+        function runGameLoop() {
+            if (!isGameRunning) return;
+
+            const canvas = document.getElementById('game-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const floorY = h - 50;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Draw Court Background
+            ctx.fillStyle = '#0c1322';
+            ctx.fillRect(0, 0, w, h);
+
+            // Court floor
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(40, floorY, w - 80, 16);
+
+            // Net
+            const netX = w / 2;
+            const netH = 110;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(netX, floorY);
+            ctx.lineTo(netX, floorY - netH);
+            ctx.stroke();
+
+            // Net grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 1;
+            for (let y = floorY - netH; y < floorY; y += 10) {
+                ctx.beginPath();
+                ctx.moveTo(netX - 6, y);
+                ctx.lineTo(netX + 6, y);
+                ctx.stroke();
+            }
+
+            // 2. Draw Target Hit Zone (Sweet Spot)
+            const sht = gameState.shuttle;
+            if (sht && sht.active) {
+                // Pulse effect
+                const pulse = Math.sin(Date.now() * 0.008) * 6;
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 6]);
+                ctx.beginPath();
+                ctx.arc(sht.sweetX, sht.sweetY, gameState.hitZoneRadius + pulse, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Sweet spot core label
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
+                ctx.beginPath();
+                ctx.arc(sht.sweetX, sht.sweetY, gameState.hitZoneRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#fbbf24';
+                ctx.font = 'bold 11px Pretendard';
+                ctx.fillText('HIT ZONE', sht.sweetX - 24, sht.sweetY + 4);
+
+                // 3. Update Shuttlecock Flight Along Quadratic Arc
+                sht.progress += sht.speed;
+
+                // Bezier curve control height
+                const controlX = (sht.startX + sht.sweetX) / 2;
+                const controlY = Math.min(sht.startY, sht.sweetY) - 100;
+
+                const t = sht.progress;
+                const oneMinusT = 1 - t;
+
+                sht.x = oneMinusT * oneMinusT * sht.startX + 2 * oneMinusT * t * controlX + t * t * sht.sweetX;
+                sht.y = oneMinusT * oneMinusT * sht.startY + 2 * oneMinusT * t * controlY + t * t * sht.sweetY;
+
+                // Draw Shuttlecock
+                ctx.save();
+                ctx.translate(sht.x, sht.y);
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(0, 0, 7, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // Check Miss condition (Passed sweet spot)
+                if (sht.progress >= 1.15) {
+                    onGameMiss('타이밍 놓침!');
+                }
+            }
+
+            // Update stats & render loop
+            updateGameHeaderStats();
+            gameLoopId = requestAnimationFrame(runGameLoop);
+        }
+
+        function triggerGameStrokeAction(strokeId) {
+            if (!isGameRunning || !gameState.shuttle || !gameState.shuttle.active) return;
+
+            const sht = gameState.shuttle;
+            const dist = Math.hypot(sht.x - sht.sweetX, sht.y - sht.sweetY);
+
+            // Check if within hitting zone radius
+            if (dist <= gameState.hitZoneRadius + 15) {
+                // Check if correct stroke was selected
+                if (strokeId === sht.targetStroke) {
+                    // Perfect or Good Hit
+                    let hitQuality = 'PERFECT!';
+                    let pts = 100;
+
+                    if (dist > gameState.hitZoneRadius * 0.5) {
+                        hitQuality = 'GOOD!';
+                        pts = 70;
+                    }
+
+                    gameState.combo += 1;
+                    const totalPts = pts + (gameState.combo * 15);
+                    gameState.score += totalPts;
+                    gameState.totalShuttles += 1;
+                    gameState.correctHits += 1;
+
+                    sht.active = false;
+                    showGameToast(`${hitQuality} +${totalPts}점`, 'text-emerald-400');
+
+                    if (strokeId === 'smash') playHitSound('smash');
+                    else playHitSound('success');
+
+                    setTimeout(() => spawnNextShuttle(), 400);
+                } else {
+                    // Wrong stroke chosen!
+                    const correctObj = STROKES.find(s => s.id === sht.targetStroke);
+                    onGameMiss(`잘못된 선택! (${correctObj ? correctObj.name : ''} 필요)`);
+                }
+            } else {
+                // Too early hit
+                onGameMiss('너무 빠름!');
+            }
+        }
+
+        function onGameMiss(reason) {
+            if (!gameState.shuttle || !gameState.shuttle.active) return;
+
+            gameState.shuttle.active = false;
+            gameState.combo = 0;
+            gameState.lives -= 1;
+            gameState.totalShuttles += 1;
+
+            playHitSound('miss');
+            showGameToast(`MISS: ${reason}`, 'text-rose-400');
+
+            if (gameState.lives <= 0) {
+                endGame(reason);
+            } else {
+                setTimeout(() => spawnNextShuttle(), 600);
+            }
+        }
+
+        function showGameToast(msg, colorClass) {
+            const toast = document.getElementById('game-toast');
+            const text = document.getElementById('game-toast-text');
+            text.innerText = msg;
+            toast.className = `opacity-100 transition-opacity duration-200 absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/90 font-bold px-4 py-2 rounded-xl border border-slate-700 text-sm shadow-xl flex items-center gap-2 z-10 ${colorClass}`;
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 800);
+        }
+
+        function endGame(reason) {
+            isGameRunning = false;
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+
+            document.getElementById('game-over-reason').innerText = reason;
+            document.getElementById('final-score').innerText = gameState.score;
+            document.getElementById('final-combo').innerText = `${gameState.combo} x`;
+
+            const acc = gameState.totalShuttles > 0 
+                ? Math.round((gameState.correctHits / gameState.totalShuttles) * 100) 
+                : 0;
+            document.getElementById('final-acc').innerText = `${acc}%`;
+
+            // Calculate Rank
+            let rank = '루키 플레이어';
+            if (gameState.score >= 1200) rank = '국가대표 스트로크 마스터';
+            else if (gameState.score >= 700) rank = '에이스 셔틀 러너';
+            else if (gameState.score >= 300) rank = '클럽 에이스';
+
+            document.getElementById('final-rank').innerText = rank;
+
+            // Save High Score
+            if (gameState.score > userStats.highScore) {
+                userStats.highScore = gameState.score;
+                userStats.rank = rank;
+                localStorage.setItem('badminton_high_score', gameState.score);
+                localStorage.setItem('badminton_rank', rank);
+            }
+
+            updateGameHeaderStats();
+            document.getElementById('game-overlay-over').classList.remove('hidden');
+        }
+
+        /* ================= KEYBOARD SHORTCUTS ================= */
+        window.addEventListener('keydown', (e) => {
+            // Hotkeys 1 ~ 7 for strokes
+            const keyMap = {
+                '1': 'clear',
+                '2': 'smash',
+                '3': 'drop',
+                '4': 'drive',
+                '5': 'hairpin',
+                '6': 'push',
+                '7': 'lift'
+            };
+
+            if (keyMap[e.key]) {
+                const strokeObj = STROKES.find(s => s.id === keyMap[e.key]);
+                if (currentTab === 'learn') {
+                    if (strokeObj) selectStrokeInLearn(strokeObj);
+                } else if (currentTab === 'sim') {
+                    if (strokeObj) {
+                        currentSelectedStroke = strokeObj;
+                        syncSimSlidersWithStroke(strokeObj);
+                        triggerSimFlight();
+                    }
+                } else if (currentTab === 'game') {
+                    triggerGameStrokeAction(keyMap[e.key]);
+                }
+            }
+
+            // Spacebar to play simulator flight or restart
+            if (e.code === 'Space') {
+                if (currentTab === 'sim') {
+                    e.preventDefault();
+                    triggerSimFlight();
+                }
+            }
+        });
+
+        /* ================= INITIALIZATION ON WINDOW LOAD ================= */
+        window.onload = function() {
+            initLearnSection();
+            initSimSection();
+            initGameCanvas();
+            updateGameHeaderStats();
+
+            // Resize handle
+            window.addEventListener('resize', () => {
+                if (currentTab === 'learn') renderLearnCanvas();
+            });
+        };
+    </script>
+</body>
+</html>
