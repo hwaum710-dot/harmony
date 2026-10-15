@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배드민턴 스트로크 마스터 - 학습 & 게임</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                    },
+                    colors: {
+                        court: {
+                            green: '#0e7490',
+                            floor: '#15803d',
+                            lines: '#ffffff',
+                            wood: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            user-select: none;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        .pulse-sweet-spot {
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-900 text-slate-100 overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="bg-slate-800/90 border-b border-slate-700 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-emerald-500 text-slate-950 p-2.5 rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center justify-center">
+                    <i class="fa-solid fa-table-tennis-paddle-ball text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                        배드민턴 스트로크 아카데미
+                    </h1>
+                    <p class="text-xs text-slate-400">스트로크 원리 학습 & 실전 판단 마스터 게임</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="flex bg-slate-950/60 p-1.5 rounded-xl border border-slate-700/60 text-sm">
+                <button id="tab-learn" onclick="switchTab('learn')" class="px-4 py-1.5 rounded-lg font-semibold transition-all duration-200 bg-emerald-500 text-slate-950 shadow">
+                    <i class="fa-solid fa-book-open mr-1.5"></i>스트로크 백과
+                </button>
+                <button id="tab-sim" onclick="switchTab('sim')" class="px-4 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-white transition-all duration-200">
+                    <i class="fa-solid fa-chart-line mr-1.5"></i>궤적 시뮬레이터
+                </button>
+                <button id="tab-game" onclick="switchTab('game')" class="px-4 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-white transition-all duration-200">
+                    <i class="fa-solid fa-gamepad mr-1.5"></i>실전 반응 게임
+                </button>
+            </nav>
+
+            <!-- User Quick Stats -->
+            <div class="hidden md:flex items-center gap-4 text-xs bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-trophy text-amber-400"></i>
+                    <span>최고점수: <strong id="header-high-score" class="text-amber-400 font-bold">0</strong></span>
+                </div>
+                <div class="h-3 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-medal text-emerald-400"></i>
+                    <span>등급: <strong id="header-rank" class="text-emerald-400 font-bold">입문자</strong></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+
+        <!-- ================= SECTION 1: STROKE DICTIONARY / LEARN ================= -->
+        <section id="section-learn" class="space-y-6">
+            <div class="bg-gradient-to-r from-slate-800 to-slate-800/80 p-6 rounded-2xl border border-slate-700 shadow-xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-emerald-400"></i> 배드민턴 7대 핵심 스트로크
+                        </h2>
+                        <p class="text-sm text-slate-300 mt-1">각 스트로크의 타구 위치, 셔틀콕 궤적, 라켓 각도 및 전술적 활용법을 익혀보세요.</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-700 text-slate-300">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400"></span> 공격형
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-sky-400 ml-2"></span> 방어/수비형
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 ml-2"></span> 연결/네트형
+                    </div>
+                </div>
+
+                <!-- Stroke Selection Grid -->
+                <div id="stroke-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+            </div>
+
+            <!-- Detailed Stroke Viewer Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Visual Trajectory Diagram Card -->
+                <div class="lg:col-span-7 bg-slate-800/90 rounded-2xl p-5 border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span id="learn-type-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">공격형 스트로크</span>
+                            <span id="learn-key-combo" class="text-xs text-slate-400"><i class="fa-solid fa-keyboard mr-1"></i>단축키: <kbd class="px-2 py-0.5 bg-slate-700 rounded text-amber-300 font-mono">1</kbd></span>
+                        </div>
+                        <h3 id="learn-stroke-title" class="text-2xl font-extrabold text-white mb-2">하이 클리어 (High Clear)</h3>
+                        <p id="learn-stroke-desc" class="text-sm text-slate-300 leading-relaxed mb-4">셔틀콕을 상대방 코트의 깊숙한 후방 끝까지 높고 길게 보내어, 자세를 정비하고 시간을 버는 대표적인 기본 스트로크입니다.</p>
+                    </div>
+
+                    <!-- Canvas Flight Trajectory Visualizer -->
+                    <div class="relative bg-slate-950 rounded-xl border border-slate-700 overflow-hidden my-2">
+                        <div class="absolute top-2 left-3 text-xs text-slate-400 flex items-center gap-2 z-10 bg-slate-900/80 px-2 py-1 rounded">
+                            <i class="fa-solid fa-eye text-emerald-400"></i> 단면 궤적 미리보기
+                        </div>
+                        <canvas id="learn-canvas" width="600" height="260" class="w-full h-auto block"></canvas>
+                    </div>
+
+                    <!-- Trajectory Metrics -->
+                    <div class="grid grid-cols-3 gap-3 mt-3 text-center">
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/60">
+                            <div class="text-xs text-slate-400">타구 높이/위치</div>
+                            <div id="learn-metric-height" class="text-sm font-bold text-sky-400 mt-0.5">머리 위 높게</div>
+                        </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/60">
+                            <div class="text-xs text-slate-400">속도 및 파워</div>
+                            <div id="learn-metric-speed" class="text-sm font-bold text-emerald-400 mt-0.5">강함 (High)</div>
+                        </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/60">
+                            <div class="text-xs text-slate-400">주요 착지 목표</div>
+                            <div id="learn-metric-target" class="text-sm font-bold text-amber-400 mt-0.5">상대 후방 엔드라인</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tactical Checklist & Key Tips Card -->
+                <div class="lg:col-span-5 bg-slate-800/90 rounded-2xl p-5 border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-base font-bold text-slate-100 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-400"></i> 핵심 핵심 기술 포인트 & 전술
+                        </h4>
+
+                        <div class="space-y-3">
+                            <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-700/80">
+                                <div class="text-xs font-bold text-emerald-400 mb-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-hand text-xs"></i> 임팩트 및 라켓 각도
+                                </div>
+                                <p id="learn-tip-racket" class="text-xs text-slate-300">몸 앞에서 최고점에서 임팩트하며, 라켓 면은 살짝 하늘을 향해 밀어 올려줍니다.</p>
+                            </div>
+
+                            <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-700/80">
+                                <div class="text-xs font-bold text-cyan-400 mb-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-person-running text-xs"></i> 풋워크 및 체중 이동
+                                </div>
+                                <p id="learn-tip-footwork" class="text-xs text-slate-300">오른발(우타 기준) 중심에서 타구와 함께 왼발로 무게 중심을 자연스럽게 이동시킵니다.</p>
+                            </div>
+
+                            <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-700/80">
+                                <div class="text-xs font-bold text-amber-400 mb-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-chess-knight text-xs"></i> 실전 전술적 상황
+                                </div>
+                                <p id="learn-tip-tactics" class="text-xs text-slate-300">상대의 공세에 밀렸을 때 시간을 벌거나, 상대 선수를 코트 뒤로 밀어내어 공간을 창출할 때 사용합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-slate-700/80 flex justify-between items-center">
+                        <span class="text-xs text-slate-400">직접 테스트해보시겠습니까?</span>
+                        <button onclick="switchTabWithStroke('sim')" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
+                            시뮬레이터로 이동 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: TRAJECTORY SIMULATOR ================= -->
+        <section id="section-sim" class="hidden space-y-6">
+            <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-xl">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-cyan-400"></i> 실시간 스트로크 물리 시뮬레이터
+                        </h2>
+                        <p class="text-xs text-slate-300 mt-0.5">파워, 각도, 타구 위치를 조절하여 셔틀콕의 비거리와 낙하지점을 직관적으로 확인하세요.</p>
+                    </div>
+                    <button id="sim-play-btn" onclick="triggerSimFlight()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold rounded-xl shadow-lg transition flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-play"></i> 스트로크 발사 (Space)
+                    </button>
+                </div>
+
+                <!-- Main Interactive Canvas -->
+                <div class="relative bg-slate-950 rounded-2xl border border-slate-700 overflow-hidden shadow-inner">
+                    <canvas id="sim-canvas" width="1000" height="420" class="w-full h-auto block"></canvas>
+                    
+                    <!-- Overlay Controls on Canvas -->
+                    <div class="absolute top-3 left-3 bg-slate-900/90 border border-slate-700 p-3 rounded-xl text-xs space-y-1.5 backdrop-blur">
+                        <div class="font-bold text-emerald-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-gauge-high"></i> 시뮬레이션 상태
+                        </div>
+                        <div class="text-slate-300">선택 스트로크: <span id="sim-current-stroke-label" class="font-bold text-white">스매시</span></div>
+                        <div class="text-slate-300">최고 도달 고도: <span id="sim-stat-height" class="font-mono text-cyan-300">0.0 m</span></div>
+                        <div class="text-slate-300">최고 비행 속도: <span id="sim-stat-speed" class="font-mono
